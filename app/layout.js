@@ -1,6 +1,7 @@
 import { Fraunces, Manrope } from "next/font/google";
 import { shop } from "@/data/shop";
 import { products } from "@/data/products";
+import { itemLabel } from "@/lib/contact";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -16,8 +17,8 @@ const manrope = Manrope({
   display: "swap",
 });
 
-const title = `${shop.name} — Fresh Chicken & Mutton Soup`;
-const description = `${shop.description} Order Chicken Clear Soup, Mutton Paya Soup and more on WhatsApp or call us directly.`;
+const title = `${shop.name} — Chicken & Mutton Soup, Momos & Rolls in Jhotwara, Jaipur`;
+const description = `${shop.description} Order on WhatsApp or call us directly. Open ${shop.locations.map((l) => l.time).join(" and ")}.`;
 
 export const metadata = {
   metadataBase: new URL(shop.siteUrl),
@@ -27,12 +28,16 @@ export const metadata = {
   },
   description,
   keywords: [
-    "chicken soup",
-    "mutton soup",
-    "mutton paya soup",
-    "soup shop near me",
-    "fresh soup",
-    "order soup on WhatsApp",
+    "chicken soup Jaipur",
+    "mutton soup Jaipur",
+    "soup shop Jhotwara",
+    "chicken momos",
+    "chicken chowmein",
+    "egg bhurji",
+    "chicken roll",
+    "egg roll",
+    "food near me Jhotwara",
+    "order food on WhatsApp",
     shop.name,
   ],
   openGraph: {
@@ -60,16 +65,17 @@ const jsonLd = {
   "@type": "Restaurant",
   name: shop.name,
   description: shop.description,
-  servesCuisine: "Soups",
+  servesCuisine: ["Soups", "Chinese", "Fast Food"],
   telephone: shop.phone,
   url: shop.siteUrl,
-  hasMap: shop.mapsUrl,
-  address: shop.address,
+  hasMap: shop.locations.map((l) => l.mapsUrl),
+  address: shop.locations.map((l) => l.address),
+  openingHours: shop.locations.map((l) => `Mo-Su ${l.opens}-${l.closes}`),
   hasMenu: {
     "@type": "Menu",
     hasMenuItem: products.map((p) => ({
       "@type": "MenuItem",
-      name: p.name,
+      name: itemLabel(p),
       description: p.description,
       offers: { "@type": "Offer", price: p.price, priceCurrency: "INR" },
     })),

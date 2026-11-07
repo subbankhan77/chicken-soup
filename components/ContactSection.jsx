@@ -42,15 +42,28 @@ export default function ContactSection() {
               </a>
             </InfoRow>
 
-            <InfoRow icon={MapPin} label="Shop address">
-              <address className="leading-relaxed not-italic">{shop.address}</address>
-            </InfoRow>
-
-            <InfoRow icon={Clock} label="Opening hours">
-              <ul className="space-y-1">
-                {shop.hours.map((h) => (
-                  <li key={h.days}>
-                    <span className="text-sand">{h.days}:</span> {h.time}
+            <InfoRow icon={MapPin} label="Where to find us">
+              <ul className="space-y-5">
+                {shop.locations.map((loc) => (
+                  <li key={loc.label}>
+                    <p className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
+                      <span className="font-semibold text-cream">{loc.label}</span>
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-ember/10 px-2.5 py-1 text-xs font-bold text-ember">
+                        <Clock className="size-3.5" aria-hidden="true" />
+                        {loc.time}
+                      </span>
+                    </p>
+                    <address className="mt-1.5 text-[15px] leading-relaxed text-cream/80 not-italic">{loc.address}</address>
+                    <a
+                      href={loc.mapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Get directions to our ${loc.label.toLowerCase()} location`}
+                      className="mt-0.5 inline-flex items-center gap-1.5 py-1.5 text-sm font-semibold text-ember underline-offset-2 hover:underline"
+                    >
+                      Get directions
+                      <ExternalLink className="size-3.5" aria-hidden="true" />
+                    </a>
                   </li>
                 ))}
               </ul>
@@ -90,16 +103,21 @@ export default function ContactSection() {
               <MapPlaceholder />
             )}
 
-            <a
-              href={shop.mapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="absolute bottom-5 left-5 inline-flex items-center gap-2 rounded-full bg-ink/85 px-5 py-3 text-sm font-bold text-cream backdrop-blur-md transition-colors hover:text-ember"
-            >
-              <MapPin className="size-4 text-ember" aria-hidden="true" />
-              Open in Google Maps
-              <ExternalLink className="size-3.5" aria-hidden="true" />
-            </a>
+            <div className="absolute inset-x-5 bottom-5 flex flex-wrap gap-2">
+              {shop.locations.map((loc) => (
+                <a
+                  key={loc.label}
+                  href={loc.mapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full bg-ink/85 px-5 py-3 text-sm font-bold text-cream backdrop-blur-md transition-colors hover:text-ember"
+                >
+                  <MapPin className="size-4 text-ember" aria-hidden="true" />
+                  {loc.label} location
+                  <ExternalLink className="size-3.5" aria-hidden="true" />
+                </a>
+              ))}
+            </div>
           </Reveal>
         </div>
       </div>
@@ -120,13 +138,13 @@ function MapPlaceholder() {
         }}
         aria-hidden="true"
       />
-      <div className="relative px-6 pb-16 text-center">
+      <div className="relative px-6 pb-32 text-center sm:pb-20">
         <span className="relative mx-auto grid size-16 place-items-center rounded-full bg-ember text-ink shadow-xl shadow-ember/30">
           <span className="absolute inset-0 animate-ping rounded-full bg-ember/40" aria-hidden="true" />
           <MapPin className="relative size-7" aria-hidden="true" />
         </span>
-        <p className="mt-6 font-display text-2xl text-cream">Our location is coming soon</p>
-        <p className="mt-2 text-sm text-sand">The map will appear here once the shop location is added.</p>
+        <p className="mt-6 font-display text-2xl text-cream">Two spots, same taste</p>
+        <p className="mt-2 text-sm text-sand">Open either location in Google Maps for directions.</p>
       </div>
     </div>
   );

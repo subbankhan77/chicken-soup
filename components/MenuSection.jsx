@@ -16,37 +16,60 @@ export default function MenuSection() {
         <SectionHeading
           id="menu-title"
           eyebrow="Our Menu"
-          title="Popular"
-          accent="soups."
-          description="Every bowl is made to order from broth we start early each morning. Tap any soup to order it on WhatsApp."
+          title="Hot & fresh,"
+          accent="every evening."
+          description="Soups, Chinese, burgers, egg specials and rolls — all made to order. Tap any item to order it on WhatsApp."
         />
+      </div>
 
-        <div className="mt-16 space-y-20">
+      {/* Sticky category jump-links */}
+      <nav
+        aria-label="Menu categories"
+        className="sticky top-[4.5rem] z-20 mt-12 border-y border-white/5 bg-ink/85 backdrop-blur-xl"
+      >
+        <ul className="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-5 py-3 [scrollbar-width:none] sm:justify-center sm:px-8 [&::-webkit-scrollbar]:hidden">
           {categories.map((category) => (
-            <div key={category.id} id={`${category.id}-soups`} className="scroll-mt-24">
-              <Reveal className="mb-8 flex items-center gap-5">
-                <h3 className="font-display text-3xl font-medium text-cream italic">{category.name}</h3>
-                <span className="h-px flex-1 bg-gradient-to-r from-white/15 to-transparent" aria-hidden="true" />
+            <li key={category.id} className="shrink-0">
+              <a
+                href={`#cat-${category.id}`}
+                className="inline-block rounded-full border border-white/10 px-4 py-2 text-sm font-semibold whitespace-nowrap text-cream/85 transition-colors hover:border-ember hover:text-ember"
+              >
+                {category.name}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <div className="relative mx-auto mt-12 max-w-7xl space-y-16 px-5 sm:space-y-20 sm:px-8">
+        {categories.map((category) => {
+          const items = products.filter((p) => p.category === category.id);
+          return (
+            <div key={category.id} id={`cat-${category.id}`} className="scroll-mt-36">
+              <Reveal className="mb-6 flex items-baseline gap-4 sm:mb-8">
+                <h3 className="font-display text-2xl font-medium text-cream italic sm:text-3xl">{category.name}</h3>
+                <span className="text-xs font-bold uppercase tracking-[0.18em] text-sand">
+                  {items.length} {items.length === 1 ? "item" : "items"}
+                </span>
+                <span className="h-px flex-1 self-center bg-gradient-to-r from-white/15 to-transparent" aria-hidden="true" />
               </Reveal>
 
-              <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {products
-                  .filter((p) => p.category === category.id)
-                  .map((product, i) => (
-                    <Reveal
-                      as="li"
-                      key={product.id}
-                      delay={i * 100}
-                      // In the 2-column (tablet) layout, centre a leftover last card instead of leaving it alone on the left.
-                      className="sm:max-lg:last:odd:col-span-2 sm:max-lg:last:odd:mx-auto sm:max-lg:last:odd:w-[calc(50%-0.75rem)]"
-                    >
-                      <SoupCard product={product} />
-                    </Reveal>
-                  ))}
+              {/* Flex-wrap instead of grid so a part-filled last row sits centred, not stuck to the left. */}
+              <ul className="flex flex-wrap justify-center gap-4 sm:gap-6">
+                {items.map((product, i) => (
+                  <Reveal
+                    as="li"
+                    key={product.id}
+                    delay={i * 100}
+                    className="w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc((100%-3rem)/3)]"
+                  >
+                    <SoupCard product={product} />
+                  </Reveal>
+                ))}
               </ul>
             </div>
-          ))}
-        </div>
+          );
+        })}
       </div>
     </section>
   );

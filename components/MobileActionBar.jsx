@@ -3,7 +3,6 @@ import { telLink } from "@/lib/contact";
 import OrderButton from "./OrderButton";
 import WhatsAppIcon from "./WhatsAppIcon";
 
-// Sticky bottom bar shown only on small screens.
 export default function MobileActionBar() {
   return (
     <div className="fixed inset-x-0 bottom-0 z-30 border-t border-white/10 bg-ink/90 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-xl md:hidden">

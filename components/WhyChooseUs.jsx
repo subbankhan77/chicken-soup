@@ -6,17 +6,17 @@ const reasons = [
   {
     icon: Clock,
     title: "Freshly Prepared Soup",
-    text: "Broth is started fresh every morning — never reheated from yesterday.",
+    text: "Soups are made fresh every evening, and every snack is cooked hot when you order.",
   },
   {
     icon: Leaf,
     title: "Quality Ingredients",
-    text: "Fresh chicken and mutton, real bones, whole spices and garden-fresh herbs.",
+    text: "Fresh chicken, mutton and eggs, with real spices and fresh vegetables.",
   },
   {
     icon: ChefHat,
     title: "Delicious Taste",
-    text: "Home-style recipes slow-cooked for deep, rich flavour in every spoonful.",
+    text: "Home-style flavour you'll keep coming back for — from the first spoonful to the last bite.",
   },
   {
     icon: Sparkles,

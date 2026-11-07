@@ -1,6 +1,8 @@
 import Image from "next/image";
 import { Heart } from "lucide-react";
 import { shop } from "@/data/shop";
+import { categories, products } from "@/data/products";
+import { formatPrice } from "@/lib/contact";
 import SectionHeading from "./SectionHeading";
 import Reveal from "./Reveal";
 
@@ -31,27 +33,27 @@ export default function AboutSection() {
             id="about-title"
             align="left"
             eyebrow="About our shop"
-            title="A neighbourhood"
-            accent="soup kitchen."
+            title="Your neighbourhood"
+            accent="soup corner."
           />
           <Reveal delay={120} className="mt-6 space-y-5 text-base leading-relaxed text-sand sm:text-lg">
             <p>
-              {shop.name} is a small, local soup shop with one simple idea: honest, home-style chicken and mutton
-              soups, made fresh every single day.
+              {shop.name} is a small, local food corner in Jhotwara, Jaipur, known for one thing first: hot, honest
+              chicken and mutton soup.
             </p>
             <p>
-              Our broths simmer for hours with real bones, fresh meat and whole spices — no shortcuts and no
-              ready-made powders. Whether you need something light and soothing or rich and hearty, there&rsquo;s a bowl
-              here for you.
+              Alongside our soups you&rsquo;ll find street-style favourites — chowmein, fried momos, burgers, rolls and
+              egg specials — all cooked fresh when you order. Whether you want a warm bowl or a quick bite, we&rsquo;ve
+              got you covered.
             </p>
             <p className="text-cream">Drop by, give us a call, or send your order on WhatsApp — we&rsquo;ll have it hot and ready.</p>
           </Reveal>
 
           <Reveal delay={220} as="dl" className="mt-10 grid grid-cols-3 gap-4 border-t border-white/10 pt-8">
             {[
-              ["100%", "Fresh daily"],
-              ["6", "Signature soups"],
-              ["0", "Preservatives"],
+              [String(products.length), "Menu items"],
+              [String(categories.length), "Categories"],
+              [formatPrice(Math.min(...products.map((p) => p.price))), "Starting from"],
             ].map(([value, label]) => (
               <div key={label}>
                 <dt className="sr-only">{label}</dt>

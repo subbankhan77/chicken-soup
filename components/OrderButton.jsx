@@ -2,7 +2,6 @@
 
 import { useOrder } from "./OrderProvider";
 
-// A button that opens the order form, optionally with a soup pre-selected.
 export default function OrderButton({ productId = "", className = "", onClick, children, ...props }) {
   const { openOrder } = useOrder();
 

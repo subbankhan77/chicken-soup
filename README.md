@@ -28,7 +28,7 @@ All shop details live in **`data/shop.js`**:
 
 ## Updating the menu
 
-Edit **`data/products.js`**: names, descriptions, prices (numbers only) and tags. To change a photo, put a new image in `public/images/` and update the `image` path.
+Edit **`data/products.js`**: categories, names, descriptions, prices (numbers only) and the optional `note` (portion size, e.g. "Half plate"). To change a photo, put a new image in `public/images/menu/` and update the `image` path.
 
 ## How ordering works
 
@@ -36,4 +36,7 @@ Customers fill in the order form, then WhatsApp opens with a pre-written message
 
 ## Photo credits
 
-The food photos are from [Unsplash](https://unsplash.com) (free to use under the Unsplash License). Swap in real photos of the shop's own soups when you have them.
+- **Menu photos** (`public/images/menu/`) are real-world photos from Wikimedia Commons, used under Creative Commons licences that require crediting the photographer. The credits are listed in `data/photoCredits.js` and shown under "Photo credits" in the website footer, so keep that list in sync. When you replace a photo with the shop's own, delete its credit line.
+- **Hero and About photos** are from [Unsplash](https://unsplash.com) (free to use, no credit required).
+
+The best option is to replace them all with real photos of the shop's own dishes.

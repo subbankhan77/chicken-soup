@@ -3,9 +3,9 @@
 import { useEffect, useId, useRef, useState } from "react";
 import Image from "next/image";
 import { AlertCircle, CheckCircle2, Minus, Plus, X } from "lucide-react";
-import { products } from "@/data/products";
+import { categories, products } from "@/data/products";
 import { shop } from "@/data/shop";
-import { buildOrderMessage, formatPrice, telLink, whatsappLink } from "@/lib/contact";
+import { buildOrderMessage, formatPrice, itemLabel, sendOrderEmail, telLink, whatsappLink } from "@/lib/contact";
 import WhatsAppIcon from "./WhatsAppIcon";
 
 const MAX_QTY = 50;
@@ -31,7 +31,7 @@ function validate(form) {
   if (!phone) errors.phone = "Please enter your mobile number.";
   else if (!/^\+?\d{10,13}$/.test(phone)) errors.phone = "Enter a valid mobile number (at least 10 digits).";
 
-  if (!form.productId) errors.productId = "Please choose a soup.";
+  if (!form.productId) errors.productId = "Please choose an item.";
 
   const qty = Number(form.quantity);
   if (!Number.isInteger(qty) || qty < 1) errors.quantity = "Quantity must be at least 1.";
@@ -48,6 +48,7 @@ export default function OrderForm({ isOpen, initialProductId, onClose }) {
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [sentUrl, setSentUrl] = useState("");
+  const [emailStatus, setEmailStatus] = useState("idle"); // idle | sending | sent | failed
 
   const selected = products.find((p) => p.id === form.productId);
   const qty = Number(form.quantity) || 0;
@@ -63,6 +64,7 @@ export default function OrderForm({ isOpen, initialProductId, onClose }) {
       setErrors({});
       setSubmitted(false);
       setSentUrl("");
+      setEmailStatus("idle");
       if (!dialog.open) dialog.showModal();
       document.documentElement.style.overflow = "hidden";
     } else if (dialog.open) {
@@ -95,17 +97,21 @@ export default function OrderForm({ isOpen, initialProductId, onClose }) {
       return;
     }
 
-    const message = buildOrderMessage({
+    const order = {
       name: form.name.trim(),
       phone: form.phone.trim(),
-      soup: selected,
+      item: selected,
       quantity: qty,
       address: form.address.trim(),
       instructions: form.instructions.trim(),
-    });
-    const url = whatsappLink(message);
+    };
+    const url = whatsappLink(buildOrderMessage(order));
+    // Open WhatsApp first, inside the click, so pop-up blockers allow it.
     window.open(url, "_blank", "noopener,noreferrer");
     setSentUrl(url);
+    // Also email the order, so the shop gets it even if the customer never taps Send in WhatsApp.
+    setEmailStatus("sending");
+    sendOrderEmail(order).then((ok) => setEmailStatus(ok ? "sent" : "failed"));
   };
 
   const fieldId = (name) => `${uid}-${name}`;
@@ -132,7 +138,7 @@ export default function OrderForm({ isOpen, initialProductId, onClose }) {
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-ember">Order via WhatsApp</p>
             <h2 id={`${uid}-title`} className="mt-1.5 font-display text-3xl font-medium">
-              {sentUrl ? "Almost done!" : "Book your soup"}
+              {sentUrl ? "Almost done!" : "Place your order"}
             </h2>
           </div>
           <button
@@ -152,6 +158,12 @@ export default function OrderForm({ isOpen, initialProductId, onClose }) {
             <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-sand">
               Your order details are ready in WhatsApp. Please review the message and tap <strong className="text-cream">Send</strong>.
               Your order will be confirmed once {shop.name} replies.
+            </p>
+            <p className="mx-auto mt-4 max-w-sm text-xs text-sand/80">
+              {emailStatus === "sending" && "Also sending your order to the shop by email…"}
+              {emailStatus === "sent" && "✓ A copy of your order was also sent to the shop by email."}
+              {emailStatus === "failed" &&
+                "We couldn't email a copy of your order, so please make sure you tap Send in WhatsApp."}
             </p>
             <div className="mt-8 flex flex-col gap-3">
               <a
@@ -220,7 +232,7 @@ export default function OrderForm({ isOpen, initialProductId, onClose }) {
               <div className="grid gap-5 sm:grid-cols-[1fr_auto]">
                 <div>
                   <label htmlFor={fieldId("productId")} className="mb-2 block text-sm font-semibold">
-                    Select soup <span className="text-ember" aria-hidden="true">*</span>
+                    Select item <span className="text-ember" aria-hidden="true">*</span>
                   </label>
                   <select
                     id={fieldId("productId")}
@@ -231,15 +243,15 @@ export default function OrderForm({ isOpen, initialProductId, onClose }) {
                     {...errorProps("productId")}
                   >
                     <option value="" disabled>
-                      Choose a soup…
+                      Choose an item…
                     </option>
-                    {["chicken", "mutton"].map((cat) => (
-                      <optgroup key={cat} label={cat === "chicken" ? "Chicken Soups" : "Mutton Soups"}>
+                    {categories.map((cat) => (
+                      <optgroup key={cat.id} label={cat.name}>
                         {products
-                          .filter((p) => p.category === cat)
+                          .filter((p) => p.category === cat.id)
                           .map((p) => (
                             <option key={p.id} value={p.id}>
-                              {p.name} — {formatPrice(p.price)}
+                              {itemLabel(p)} — {formatPrice(p.price)}
                             </option>
                           ))}
                       </optgroup>
@@ -298,7 +310,7 @@ export default function OrderForm({ isOpen, initialProductId, onClose }) {
                     <Image src={selected.image} alt="" fill sizes="64px" className="object-cover" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-display text-lg">{selected.name}</p>
+                    <p className="truncate font-display text-lg">{itemLabel(selected)}</p>
                     <p className="text-sm text-sand">
                       {formatPrice(selected.price)} × {qty || 0}
                     </p>
@@ -340,7 +352,7 @@ export default function OrderForm({ isOpen, initialProductId, onClose }) {
                   maxLength={300}
                   value={form.instructions}
                   onChange={(e) => update("instructions", e.target.value)}
-                  placeholder="e.g. Less spicy please"
+                  placeholder="e.g. Less spicy, also add 2 boiled eggs"
                   className={`${inputClass("instructions")} resize-none`}
                 />
               </div>

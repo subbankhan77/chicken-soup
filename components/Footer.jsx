@@ -2,6 +2,7 @@ import { MapPin, Phone } from "lucide-react";
 import { shop } from "@/data/shop";
 import { greetingMessage, telLink, whatsappLink } from "@/lib/contact";
 import { navLinks } from "@/lib/navigation";
+import { photoCredits } from "@/data/photoCredits";
 import Logo from "./Logo";
 import WhatsAppIcon from "./WhatsAppIcon";
 
@@ -67,25 +68,52 @@ export default function Footer() {
                 Chat on WhatsApp
               </a>
             </li>
-            <li>
-              <a
-                href={shop.mapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-start gap-3 py-2 transition-colors hover:text-ember"
-              >
-                <MapPin className="mt-0.5 size-4 shrink-0 text-ember" aria-hidden="true" />
-                {shop.address}
-              </a>
-            </li>
+            {shop.locations.map((loc) => (
+              <li key={loc.label}>
+                <a
+                  href={loc.mapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-start gap-3 py-2 transition-colors hover:text-ember"
+                >
+                  <MapPin className="mt-0.5 size-4 shrink-0 text-ember" aria-hidden="true" />
+                  <span>
+                    <span className="block text-xs font-bold text-ember">
+                      {loc.label} · {loc.time}
+                    </span>
+                    {loc.address}
+                  </span>
+                </a>
+              </li>
+            ))}
           </ul>
         </div>
       </div>
 
       <div className="border-t border-white/5">
-        <p className="mx-auto max-w-7xl px-5 py-6 text-center text-xs text-sand/70 sm:px-8 md:text-left">
-          © {year} {shop.name}. All rights reserved.
-        </p>
+        <div className="mx-auto max-w-7xl px-5 py-6 text-xs text-sand/70 sm:px-8">
+          <p className="text-center md:text-left">© {year} {shop.name}. All rights reserved.</p>
+
+          <details className="group mt-3 text-center md:text-left">
+            <summary className="inline-block cursor-pointer py-2 underline-offset-2 hover:text-ember hover:underline">
+              Photo credits
+            </summary>
+            <ul className="mt-2 grid gap-x-8 gap-y-1.5 text-left sm:grid-cols-2 lg:grid-cols-3">
+              {photoCredits.map((c) => (
+                <li key={c.dish}>
+                  <a href={c.source} target="_blank" rel="noopener noreferrer" className="hover:text-ember">
+                    {c.dish}
+                  </a>{" "}
+                  by {c.author},{" "}
+                  <a href={c.licenseUrl} target="_blank" rel="noopener noreferrer" className="hover:text-ember">
+                    {c.license}
+                  </a>
+                  {c.edited && " (colours edited)"}
+                </li>
+              ))}
+            </ul>
+          </details>
+        </div>
       </div>
     </footer>
   );
